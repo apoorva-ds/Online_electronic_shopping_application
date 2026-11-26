@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local SQLite database (auto-created on first run)
+ecommerce.db
+*.db
+
+# Editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
