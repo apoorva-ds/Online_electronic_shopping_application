@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Edit address | BuyASAP{% endblock %}
+{% block content %}
+<section class="panel" style="max-width:720px;margin:35px auto">
+    <span class="badge">DELIVERY DETAILS</span>
+    <h1>Edit address</h1>
+    <form method="post">
+        <label>Street / flat / building <input name="street" value="{{ address.street }}" autocomplete="street-address" required></label>
+        <div class="grid">
+            <label>City <input name="city" value="{{ address.city }}" autocomplete="address-level2" required></label>
+            <label>State <input name="state" value="{{ address.state }}" autocomplete="address-level1" required></label>
+            <label>6-digit PIN code <input name="pincode" value="{{ address.pincode }}" inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code" required></label>
+            <label>Landmark <input name="landmark" value="{{ address.landmark or '' }}"></label>
+        </div>
+        <button>Save address</button>
+        <a class="button outline" href="{{ url_for('account') }}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

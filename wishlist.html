@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Wishlist | BuyASAP{% endblock %}
+{% block content %}
+<h1>Your wishlist, Friend</h1>
+{% if items %}
+<div class="grid">
+    {% for item in items %}
+    <article class="product-card">
+        <a href="{{ url_for('product_detail', product_id=item.productID) }}"><img src="{{ item.image }}" alt="{{ item.name }}"></a>
+        <h3>{{ item.name }}</h3><p class="price">₹ {{ "%.2f"|format(item.price) }}</p>
+        <form method="post" action="{{ url_for('add_to_cart', product_id=item.productID) }}"><button>Add to Cart</button></form>
+        <form method="post" action="{{ url_for('toggle_wishlist', product_id=item.productID) }}" style="margin-top:8px"><button class="danger">Remove</button></form>
+    </article>
+    {% endfor %}
+</div>
+{% else %}<div class="panel">Your wishlist is empty. <a href="{{ url_for('products') }}">Browse products</a>.</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ order.orderId }} | BuyASAP{% endblock %}
+{% block content %}
+<section class="panel">
+    <h1>BuyASAP order receipt</h1>
+    <p>Order {{ order.orderId }} · {{ order.orderDate[:10] }}</p>
+    <p>Ship to: {{ shipping_address.street }}, {{ shipping_address.city }}, {{ shipping_address.state }} {{ shipping_address.pincode }}</p>
+    <table>
+        <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Subtotal</th></tr></thead>
+        <tbody>{% for line in lines %}<tr><td>{{ line.name }}</td><td>{{ line.quantity }}</td><td>₹ {{ "%.2f"|format(line.unitPrice) }}</td><td>₹ {{ "%.2f"|format(line.totalPrice) }}</td></tr>{% endfor %}</tbody>
+    </table>
+    <p>Subtotal ₹ {{ "%.2f"|format(order.totalAmount) }} · Discount ₹ {{ "%.2f"|format(order.discountAmount) }}</p>
+    <p class="price">Total: ₹ {{ "%.2f"|format(order.finalAmount) }}</p>
+    <p>Payment method: {{ order.paymentMethod }} · {{ order.paymentStatus }}</p>
+    <p class="muted">Demo receipt only. No payment gateway was contacted and no money was collected.</p>
+    <button onclick="window.print()">Print receipt</button>
+    <a class="button secondary" href="{{ url_for('order_detail', order_id=order.orderId) }}">Order details</a>
+</section>
+{% endblock %}

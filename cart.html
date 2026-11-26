@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Your cart | BuyASAP{% endblock %}
+{% block content %}
+<h1>Your cart, Friend</h1>
+{% if cart %}
+<div class="panel">
+    <table>
+        <thead><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for item in cart %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>₹ {{ "%.2f"|format(item.price) }}</td>
+            <td>
+                <form method="post" action="{{ url_for('update_cart') }}">
+                    <input type="hidden" name="product_id" value="{{ item.productID }}">
+                    <input type="number" name="quantity" min="0" value="{{ item.quantity }}" style="width:80px">
+                    <button class="secondary">Update</button>
+                </form>
+            </td>
+            <td>₹ {{ "%.2f"|format(item.price * item.quantity) }}</td>
+            <td><form method="post" action="{{ url_for('remove_from_cart', product_id=item.productID) }}"><button class="danger">Remove</button></form></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p>Subtotal: ₹ {{ "%.2f"|format(subtotal) }}</p>
+    {% if coupon %}<p>Coupon {{ coupon.couponCode }}: −₹ {{ "%.2f"|format(discount) }}</p>{% endif %}
+    <p class="price">Total: ₹ {{ "%.2f"|format(total) }}</p>
+</div>
+<section class="panel">
+    <h2>Coupon or discount</h2>
+    <form method="post" action="{{ url_for('apply_coupon') }}">
+        <label>Coupon code <input name="coupon_code" value="{{ coupon.couponCode if coupon else '' }}" placeholder="Try TECH10 or SAVE500"></label>
+        <button class="secondary">Apply coupon</button>
+    </form>
+</section>
+<p><a class="button" href="{{ url_for('checkout') }}">Continue to checkout</a> <a class="button secondary" href="{{ url_for('products') }}">Continue shopping</a></p>
+{% else %}
+<div class="panel"><p>Your cart is empty.</p><a class="button" href="{{ url_for('products') }}">Browse products</a></div>
+{% endif %}
+{% endblock %}

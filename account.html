@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Your account | BuyASAP{% endblock %}
+{% block content %}
+<div class="section-head"><div><span class="badge">YOUR PROFILE</span><h1>Account settings</h1><p class="muted">Keep your details and delivery addresses up to date, Friend.</p></div></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start">
+    <section class="panel">
+        <h2>Personal details</h2>
+        <form method="post">
+            <label>Full name <input name="name" value="{{ customer.name }}" autocomplete="name" required></label>
+            <label>Phone number <input name="phone" value="{{ customer.phoneNumber or '' }}" autocomplete="tel"></label>
+            <button>Save details</button>
+        </form>
+        <hr style="border:0;border-top:1px solid #e7eaf0;margin:24px 0">
+        <h3>Verified email</h3>
+        <p>{{ customer.email }} <span class="badge">Verified</span></p>
+        <form method="post" action="{{ url_for('request_email_change') }}">
+            <label>New email address
+                <input type="email" name="email" placeholder="you@gmail.com" autocomplete="email" required>
+            </label>
+            <p class="muted">We will send a one-time code to the new address before changing it.</p>
+            <button class="outline">Verify new email</button>
+        </form>
+        <hr style="border:0;border-top:1px solid #e7eaf0;margin:24px 0">
+        <h3>Change password</h3>
+        <form method="post">
+            <input type="hidden" name="name" value="{{ customer.name }}">
+            <input type="hidden" name="phone" value="{{ customer.phoneNumber or '' }}">
+            <label>Current password <input type="password" name="current_password" autocomplete="current-password"></label>
+            <label>New password <input type="password" name="new_password" minlength="6" autocomplete="new-password"></label>
+            <button class="secondary">Update password</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="section-head" style="margin-top:0"><div><h2>Delivery addresses</h2><p class="muted">Choose where BuyASAP should deliver.</p></div></div>
+        {% for address in addresses %}
+        <article style="border:1px solid #e7eaf0;border-radius:14px;padding:15px;margin:12px 0">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                <strong>{{ address.city }}</strong>{% if address.isDefault %}<span class="badge">Default</span>{% endif %}
+            </div>
+            <p>{{ address.street }}, {{ address.city }}, {{ address.state }} {{ address.pincode }}{% if address.landmark %}<br><span class="muted">Near {{ address.landmark }}</span>{% endif %}</p>
+            <a class="button outline" href="{{ url_for('edit_address', address_id=address.addressID) }}">Edit</a>
+            {% if not address.isDefault %}<form class="inline" method="post" action="{{ url_for('set_default_address', address_id=address.addressID) }}"><button class="secondary">Make default</button></form>{% endif %}
+            <form class="inline" method="post" action="{{ url_for('delete_address', address_id=address.addressID) }}"><button class="danger">Remove</button></form>
+        </article>
+        {% else %}<p class="muted">No saved addresses yet. Add one below.</p>{% endfor %}
+
+        <h3>Add a delivery address</h3>
+        <form method="post" action="{{ url_for('add_address') }}">
+            <label>Street / flat / building <input name="street" autocomplete="street-address" required></label>
+            <div class="grid">
+                <label>City <input name="city" autocomplete="address-level2" required></label>
+                <label>State <input name="state" autocomplete="address-level1" required></label>
+                <label>6-digit PIN code <input name="pincode" inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code" required></label>
+                <label>Landmark <input name="landmark"></label>
+            </div>
+            <button>Add address</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

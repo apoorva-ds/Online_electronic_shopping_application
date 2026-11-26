@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}BuyASAP | Shop electronics{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Better everyday tech starts here, Friend.</h1>
+    <p>Discover smart electronics, everyday essentials and trusted technology for your home, work and entertainment.</p>
+    <a class="button" href="{{ url_for('products') }}">Explore the collection <span>→</span></a>
+</section>
+
+<div class="section-head"><div><span class="badge">SHOP BY CATEGORY</span><h2>Find your next favorite</h2></div></div>
+<section class="category-grid">
+    {% set icons = ["▣", "◉", "♫", "▱", "◖", "♨", "▣"] %}
+    {% for category in store_categories %}
+    <a class="category-tile" href="{{ url_for('products', category=category[0]) }}">
+        <span class="category-icon">{{ icons[loop.index0] }}</span><span>{{ category[1] }}</span>
+        <small class="muted">10 picks</small>
+    </a>
+    {% endfor %}
+</section>
+
+<div class="section-head">
+    <div><span class="badge">CUSTOMER FAVORITES</span><h2>Popular at BuyASAP</h2></div>
+    <a href="{{ url_for('products') }}">See everything →</a>
+</div>
+<section class="product-grid">
+    {% for product in products %}
+    <article class="product-card">
+        <a href="{{ url_for('product_detail', product_id=product.productID) }}"><img src="{{ product.image }}" alt="{{ product.name }}"></a>
+        <p class="meta">BUYASAP SELECT <span class="stars">★ {{ "%.1f"|format(product.rating) }}</span></p>
+        <h3><a href="{{ url_for('product_detail', product_id=product.productID) }}">{{ product.name }}</a></h3>
+        <p class="price">₹ {{ "%.0f"|format(product.price) }} <del class="muted">₹ {{ "%.0f"|format(product.listPrice) }}</del></p>
+        <form method="post" action="{{ url_for('add_to_cart', product_id=product.productID) }}"><button>Add to Cart</button></form>
+    </article>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Customer service | BuyASAP{% endblock %}
+{% block content %}
+<h1>Customer service, Friend</h1>
+<section class="panel">
+    <span class="badge">BUYASAP AI CARE</span>
+    <h2>How can we help?</h2>
+    <p>Use the AI chat assistant for instant answers. Type <strong>connect to customer care</strong> when you need a person; it will create a support ticket and a human agent can respond within 24 working hours.</p>
+    <form method="post">
+        <label>Subject <input name="subject" required></label>
+        <label>Details <textarea name="description" rows="5" required></textarea></label>
+        <button>Submit request</button>
+    </form>
+</section>
+<section class="panel">
+    <h2>Your support requests</h2>
+    {% for ticket in tickets %}
+    <article><h3>{{ ticket.subject }} · {{ ticket.status }}</h3><p>{{ ticket.description }}</p><small class="muted">Ticket {{ ticket.ticketId }} · {{ ticket.createdDate[:10] }} · Assigned to {{ ticket.assignedTo }}</small></article><hr>
+    {% else %}<p>No support requests yet.</p>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sign in | BuyASAP{% endblock %}
+{% block content %}
+<section class="panel" style="max-width:480px;margin:40px auto">
+    <h1>Welcome to BuyASAP</h1>
+    <p>Sign in to your verified BuyASAP account, Friend.</p>
+    <form method="post" action="{{ url_for('login') }}">
+        <label>Email <input type="email" name="email" autocomplete="email" required></label>
+        <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+        <button>Sign in</button>
+    </form>
+    <p>New to BuyASAP? <a href="{{ url_for('register') }}">Create an account</a>.</p>
+</section>
+{% endblock %}

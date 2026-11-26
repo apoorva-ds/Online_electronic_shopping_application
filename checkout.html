@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Checkout | BuyASAP{% endblock %}
+{% block content %}
+<h1>Checkout, Friend</h1>
+<form method="post" class="panel">
+    <h2>Shipping address</h2>
+    {% for address in addresses %}
+    <label style="display:block;margin:10px 0"><input type="radio" name="address_id" value="{{ address.addressID }}" {% if loop.first %}checked{% endif %} required>
+        {{ address.street }}, {{ address.city }}, {{ address.state }} {{ address.pincode }}{% if address.landmark %} · {{ address.landmark }}{% endif %}{% if address.isDefault %} (Default){% endif %}
+    </label>
+    {% endfor %}
+    <label style="display:block;margin:12px 0"><input type="radio" name="address_id" value="new" {% if not addresses %}checked{% endif %} required> Enter a new shipping address</label>
+    <div class="grid">
+        <label>Street <input name="street" autocomplete="street-address"></label>
+        <label>City <input name="city" autocomplete="address-level2"></label>
+        <label>State <input name="state" autocomplete="address-level1"></label>
+        <label>6-digit PIN code <input name="pincode" inputmode="numeric" pattern="[0-9]{6}"></label>
+        <label>Landmark (optional) <input name="landmark"></label>
+    </div>
+    <h2>Payment method</h2>
+    <p class="muted">Demo checkout only: no gateway is contacted and no real payment is collected.</p>
+    {% for method in payment_methods %}
+    <label style="display:block;margin:8px 0"><input type="radio" name="payment_method" value="{{ method }}" {% if loop.first %}checked{% endif %} required> {{ method }}</label>
+    {% endfor %}
+    <div class="panel">
+        <p>Subtotal: ₹ {{ "%.2f"|format(subtotal) }}</p>
+        {% if coupon %}<p>Coupon {{ coupon.couponCode }}: −₹ {{ "%.2f"|format(discount) }}</p>{% endif %}
+        <p class="price">Total: ₹ {{ "%.2f"|format(total) }}</p>
+    </div>
+    <button type="submit">Place demo order</button>
+</form>
+{% endblock %}

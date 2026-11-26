@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Shop products | BuyASAP{% endblock %}
+{% block content %}
+<div class="section-head">
+    <div><span class="badge">BUYASAP SELECT</span><h1>Shop electronics, Friend</h1><p class="muted">Thoughtful picks from Indian brands, at prices worth a second look.</p></div>
+    <span class="muted">{{ products|length }} products</span>
+</div>
+<form class="panel" method="get" action="{{ url_for('products') }}">
+    <label>Search products
+        <input type="search" name="q" value="{{ filters.get('q', '') }}" placeholder="Try boAt, phone, kitchen...">
+    </label>
+    <div class="grid">
+        <label>Category
+            <select name="category"><option value="">All categories</option>
+                {% for category in categories %}<option value="{{ category.categoryID }}" {% if filters.get('category') == category.categoryID %}selected{% endif %}>{{ category.name }}</option>{% endfor %}
+            </select>
+        </label>
+        <label>Brand
+            <select name="brand"><option value="">All brands</option>
+                {% for brand in brands %}<option value="{{ brand.brand }}" {% if filters.get('brand') == brand.brand %}selected{% endif %}>{{ brand.brand }}</option>{% endfor %}
+            </select>
+        </label>
+        <label>Min price (₹) <input type="number" min="0" step="1" name="min_price" value="{{ filters.get('min_price', '') }}"></label>
+        <label>Max price (₹) <input type="number" min="0" step="1" name="max_price" value="{{ filters.get('max_price', '') }}"></label>
+        <label>Sort by
+            <select name="sort">
+                <option value="featured" {% if filters.get('sort', 'featured') == 'featured' %}selected{% endif %}>Featured</option>
+                <option value="price_low" {% if filters.get('sort') == 'price_low' %}selected{% endif %}>Price: low to high</option>
+                <option value="price_high" {% if filters.get('sort') == 'price_high' %}selected{% endif %}>Price: high to low</option>
+                <option value="rating" {% if filters.get('sort') == 'rating' %}selected{% endif %}>Top rated</option>
+                <option value="name" {% if filters.get('sort') == 'name' %}selected{% endif %}>Name</option>
+            </select>
+        </label>
+    </div>
+    <button type="submit">Show products</button>
+    <a class="button outline" href="{{ url_for('products') }}">Reset filters</a>
+</form>
+{% if products %}
+<section class="product-grid">
+    {% for product in products %}
+    <article class="product-card">
+        <a href="{{ url_for('product_detail', product_id=product.productID) }}"><img src="{{ product.image }}" alt="{{ product.name }}"></a>
+        <p class="meta">{{ product.categoryName }} · {{ product.brand }} <span class="stars">★ {{ "%.1f"|format(product.rating) }}</span></p>
+        <h3><a href="{{ url_for('product_detail', product_id=product.productID) }}">{{ product.name }}</a></h3>
+        <p class="price">₹ {{ "%.0f"|format(product.price) }} <del class="muted">₹ {{ "%.0f"|format(product.listPrice) }}</del></p>
+        {% set savings = product.listPrice - product.price %}
+        {% set percent = ((savings / product.listPrice * 100) if product.listPrice else 0) | round | int %}
+        <p class="meta" style="color:#16833b;font-weight:700">{{ percent }}% off · ₹ {{ "%.0f"|format(savings) }} savings</p>
+        <p class="meta">{% if product.stock > 0 %}Ready to ship{% else %}Currently unavailable{% endif %}</p>
+        <div class="actions">
+            {% if product.stock > 0 %}
+            <form method="post" action="{{ url_for('add_to_cart', product_id=product.productID) }}"><button type="submit">Add to Cart</button></form>
+            {% endif %}
+            <form method="post" action="{{ url_for('toggle_wishlist', product_id=product.productID) }}"><button class="secondary" type="submit" aria-label="Add {{ product.name }} to wishlist">♡</button></form>
+        </div>
+    </article>
+    {% endfor %}
+</section>
+{% else %}
+<div class="panel">No products match your filters. <a href="{{ url_for('products') }}">See all products</a>.</div>
+{% endif %}
+{% endblock %}

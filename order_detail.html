@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.orderId }} | BuyASAP{% endblock %}
+{% block content %}
+<h1>Order {{ order.orderId }}</h1>
+<section class="panel">
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Date:</strong> {{ order.orderDate[:10] }}</p>
+    <p><strong>Shipping to:</strong> {{ shipping_address.street }}, {{ shipping_address.city }}, {{ shipping_address.state }} {{ shipping_address.pincode }}{% if shipping_address.landmark %}, {{ shipping_address.landmark }}{% endif %}</p>
+    <p><strong>Payment:</strong> {{ order.paymentMethod }} — {{ order.paymentStatus or "Pending" }}</p>
+    {% if order.transactionId %}<p><strong>Transaction reference:</strong> {{ order.transactionId }}</p>{% endif %}
+    <table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Total</th></tr></thead>
+    <tbody>{% for line in lines %}<tr><td>{{ line.name }}</td><td>{{ line.quantity }}</td><td>₹ {{ "%.2f"|format(line.unitPrice) }}</td><td>₹ {{ "%.2f"|format(line.totalPrice) }}</td></tr>{% endfor %}</tbody></table>
+    <p>Subtotal ₹ {{ "%.2f"|format(order.totalAmount) }} · Discount ₹ {{ "%.2f"|format(order.discountAmount) }} · <strong>Paid / due ₹ {{ "%.2f"|format(order.finalAmount) }}</strong></p>
+    <p class="muted">Demo transaction only; BuyASAP did not contact a payment gateway or collect money.</p>
+    <p><a class="button secondary" href="{{ url_for('invoice', order_id=order.orderId) }}">View / print receipt</a></p>
+</section>
+<section class="panel">
+    <h2>Delivery tracking</h2>
+    {% if order.trackingNumber %}
+        <p><strong>{{ order.shipmentStatus }}</strong> · {{ order.carrier }} · Tracking {{ order.trackingNumber }}</p>
+        <p>Current location: {{ order.currentLocation }} · Estimated delivery: {{ order.estimatedDelivery }}</p>
+        <ol>{% for event in tracking %}<li>{{ event.status }} — {{ event.location }} ({{ event.timestamp[:10] }})</li>{% endfor %}</ol>
+    {% else %}<p>Tracking information is not available yet.</p>{% endif %}
+</section>
+{% if order.status in ["Processing", "Confirmed"] %}
+<form method="post" action="{{ url_for('cancel_order', order_id=order.orderId) }}" onsubmit="return confirm('Cancel this order?')"><button class="danger">Cancel order</button></form>
+{% endif %}
+{% if order.status == "Delivered" and not return_request %}
+<section class="panel">
+    <h2>Return or refund request</h2>
+    <form method="post" action="{{ url_for('request_return', order_id=order.orderId) }}">
+        <label>Reason <textarea name="reason" minlength="5" required></textarea></label>
+        <button>Request return / refund</button>
+    </form>
+</section>
+{% elif return_request %}
+<section class="panel"><h2>Return request {{ return_request.returnId }}</h2><p>Status: {{ return_request.status }}</p><p>{{ return_request.reason }}</p><p>{{ return_request.resolutionNote }}</p></section>
+{% endif %}
+<p><a href="{{ url_for('orders') }}">Back to orders</a></p>
+{% endblock %}

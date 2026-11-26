@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Create account | BuyASAP{% endblock %}
+{% block content %}
+<section class="panel" style="max-width:480px;margin:40px auto">
+    <h1>Join BuyASAP</h1>
+    <p>Create an account with your Gmail or another valid email address, Friend. We’ll verify it by code.</p>
+    <form method="post" action="{{ url_for('register') }}">
+        <label>Full name <input name="name" autocomplete="name" required></label>
+        <label>Email address <input type="email" name="email" placeholder="you@gmail.com" autocomplete="email" required></label>
+        <label>Phone (optional) <input name="phone" autocomplete="tel"></label>
+        <label>Password (at least 6 characters) <input type="password" name="password" minlength="6" autocomplete="new-password" required></label>
+        <button>Continue to email verification</button>
+    </form>
+    <p>Already registered? <a href="{{ url_for('login') }}">Sign in</a>.</p>
+</section>
+{% endblock %}

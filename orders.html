@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Your orders | BuyASAP{% endblock %}
+{% block content %}
+<h1>Your orders and transactions, Friend</h1>
+{% if orders %}
+<div class="panel"><table>
+    <thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Total</th><th>Payment</th><th>Tracking</th></tr></thead>
+    <tbody>{% for order in orders %}
+    <tr>
+        <td><a href="{{ url_for('order_detail', order_id=order.orderId) }}">{{ order.orderId }}</a></td>
+        <td>{{ order.orderDate[:10] }}</td><td>{{ order.status }}</td>
+        <td>₹ {{ "%.2f"|format(order.finalAmount) }}</td><td>{{ order.paymentMethod }} · {{ order.paymentStatus or "—" }}</td>
+        <td>{{ order.trackingNumber or "Not available" }}</td>
+    </tr>
+    {% endfor %}</tbody>
+</table></div>
+{% else %}<div class="panel">No orders yet. <a href="{{ url_for('products') }}">Start shopping</a>.</div>{% endif %}
+{% endblock %}
